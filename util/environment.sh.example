@@ -1,0 +1,7 @@
+# Sets up your environment.
+# Copy this file to `environment.sh` and *do not check into source control*.
+
+export IDE_DB_HOST='dbhost'
+export IDE_DB_USER='someuser'
+export IDE_DB_PASSWORD='mypasswordispassword'
+export IDE_DB_NAME='idedb'
