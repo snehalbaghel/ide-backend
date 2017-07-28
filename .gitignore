@@ -1,3 +1,4 @@
 node_modules/*
 .idea/*
 util/environment.sh
+ecosystem.config.js
