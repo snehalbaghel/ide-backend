@@ -1,9 +1,11 @@
 const request = require('request-promise');
-const secrets = require('../secrets.json');
-const DB = require ('./db');
+const secrets    = require('../config/config.json')[process.env.NODE_ENV || 'development'];
+const models = require('../models');
+const uid = require('uid');
 
+var response_token;
 module.exports = {
-  login: (req, res, next) => {
+  login: async (req, res, next) => {
     const options = {
       method: 'POST',
       uri: 'https://account.codingblocks.com/oauth/token',
@@ -19,57 +21,61 @@ module.exports = {
     request(options)
       .then(Res => {
         console.log(Res);
+        response_token = Res.access_token
         const options = {
           method: 'GET',
           uri: 'https://account.codingblocks.com/api/users/me',
           headers: {
-            "Authorization" : `Bearer ${Res.access_token}`
+            "Authorization" : `Bearer ${response_token}`
           },
           json: true
         };
         request(options)
           .then(data => {
-            req.session.user = data.id;
-            req.session.save();
-            DB.query (
-              'select * from users where oneauthid = $1',
-              [data.id]
-            )
-            .then (({ rows }) => {
-              if(!rows[0]) {
-                DB.query (
-                  'insert into users (oneauthid, username, firstname, lastname) values ($1, $2, $3, $4) returning *',
-                  [data.id, data.username, data.firstname, data.lastname]
-                )
-                .then (({ rows }) => console.log (rows[0]))
-                .catch (error => console.error (error))
-              }
-              else console.log(rows[0])
-              res.status(200).send("success");
-            })
-            .catch (error => console.error (error))
-          });
+            models.Token.findOrCreate({
+              where: {
+                accesstoken: response_token
+              },
+              defaults: {
+                accesstoken: response_token,
+                clienttoken: uid(16),
+                User: {
+                  oneauthId: data.id,
+                  username: data.username,
+                  firstname: data.firstname, 
+                  lastname: data.lastname
+                }
+              },
+              include: [models.User]
+            }).then(function (tokenrow) {
+            tokenrow = tokenrow[0].get()
+            tokenrow.User = tokenrow.User.get()
+            res.json({"token":tokenrow.clienttoken})
+          }).catch(function (err) {
+            console.log(err);
+            res.status(401).send("Unauthorised");
+          })
       });
+    })
   },
 
-  me: (req, res, next) => {
-    if(req.session.user){
-      DB.query (
-        'select * from users where oneauthid = $1',
-        [req.session.user]
-      )
-      .then (({ rows }) => {
-        console.log(rows[0])
-        res.send("success")
-      })
-      .catch (error => console.error (error)) 
+  me: async (req, res, next) => {
+    if (!req.user) 
+      return res.status(401).send("Unauthorised");
+    else {
+      res.json(req.user);
     }
-    else
-      res.send("please login")
   },
   logout: async (req, res, next) => {
-    console.log('I managed to log out!');
-    req.session = null;
-    res.redirect('/');
+    models.Token.destroy({
+      where: {
+        clienttoken: req.headers.token
+      }
+    }).then(() => {
+      res.send("success");
+    }).catch((err) => {
+      console.log(err);
+      res.status(500).send("Server Error")
+    })
   }
 }

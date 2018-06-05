@@ -3,15 +3,15 @@ const path = require ('path');
 const favicon = require ('serve-favicon');
 const logger = require ('morgan');
 const cookieParser = require ('cookie-parser');
-var session = require('express-session')
 const bodyParser = require ('body-parser');
-
+const passport = require ('passport');
+const passportConf = require ('./passport');
 const index = require ('./routes/index');
 const users = require ('./routes/users');
 const code = require ('./routes/code');
 
 const U = require ('./util/util');
-const secrets = require('./secrets.json');
+const secrets = require('./config/config.json')[process.env.NODE_ENV || 'development'];
 
 const app = express ();
 
@@ -26,12 +26,7 @@ app.use (logger ('dev'));
 app.use (bodyParser.json ());
 app.use (bodyParser.urlencoded ({ extended: false }));
 app.use (cookieParser ());
-app.use(session({
-  secret: secrets.secret,
-  saveUninitialized: true,
-  resave: true,
-  cookie: { "maxAge": 60000}
-}))
+passport.initialize()
 app.use (express.static (path.join (__dirname, 'public')));
 app.use (express.static (path.join (__dirname, '.well-known')));
 
