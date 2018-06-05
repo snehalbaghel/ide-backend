@@ -32,29 +32,37 @@ module.exports = {
         };
         request(options)
           .then(data => {
-            models.Token.findOrCreate({
+            models.User.findOrCreate({
               where: {
-                accesstoken: response_token
+                oneauthId: data.id
               },
               defaults: {
-                accesstoken: response_token,
-                clienttoken: uid(16),
-                User: {
-                  oneauthId: data.id,
-                  username: data.username,
-                  firstname: data.firstname, 
-                  lastname: data.lastname
-                }
-              },
-              include: [models.User]
-            }).then(function (tokenrow) {
-            tokenrow = tokenrow[0].get()
-            tokenrow.User = tokenrow.User.get()
-            res.json({"token":tokenrow.clienttoken})
-          }).catch(function (err) {
-            console.log(err);
-            res.status(401).send("Unauthorised");
-          })
+                oneauthId: data.id,
+                username: data.username,
+                firstname: data.firstname, 
+                lastname: data.lastname
+              }
+            }).then((user)=>{
+              models.Token.findOrCreate({
+                where: {
+                  accesstoken: response_token
+                },
+                defaults: {
+                  accesstoken: response_token,
+                  clienttoken: uid(16),
+                  UserId: user[0].id
+                },
+                include: [models.User]
+              }).then(function (tokenrow) {
+                res.json({"token":tokenrow[0].clienttoken})
+              }).catch(function (err) {
+                console.log(err);
+                res.status(401).send("Unauthorised");
+              })
+            }).catch((err)=>{
+              console.log(err);
+              res.status(401).send("Unauthorised");
+            });
       });
     })
   },
