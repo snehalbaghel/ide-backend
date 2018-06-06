@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var UsersUtil = require('../util/users');
+var UsersUtil = require('../controllers/users');
 const passport = require('passport');
 
 /* GET users listing. */
