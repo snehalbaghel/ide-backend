@@ -1,0 +1,38 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "",
+    "database": "ideDB",
+    "host": "localhost",
+    "dialect": "postgres",
+    "clientId":"6469017951",
+    "clientSecret":"",
+    "callbackURL":"http://localhost:3000/login",
+    "authURL":"https://account.codingblocks.com/oauth/authorize",
+    "tokenURL":"https://account.codingblocks.com/oauth/token"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "clientId":"6469017951",
+    "clientSecret":"",
+    "callbackURL":"",
+    "authURL":"https://account.codingblocks.com/oauth/authorize",
+    "tokenURL":"https://account.codingblocks.com/oauth/token"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "clientId":"6469017951",
+    "clientSecret":"",
+    "callbackURL":"",
+    "authURL":"https://account.codingblocks.com/oauth/authorize",
+    "tokenURL":"https://account.codingblocks.com/oauth/token"
+  }
+}
