@@ -79,7 +79,7 @@ module.exports = {
           clienttoken: token
         }
       })
-      res.send("success");
+      res.status(200).send("success");
     } catch (error) { 
       console.log(err);
       res.status(500).send("Server Error")
