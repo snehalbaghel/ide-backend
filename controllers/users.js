@@ -1,7 +1,7 @@
 const request = require('request-promise');
 const secrets    = require('../config/config.json')[process.env.NODE_ENV || 'development'];
 const models = require('../models');
-const uid = require('uid');
+const uuidv4 = require('uuid/v4');
 
 var response_token;
 module.exports = {
@@ -49,7 +49,7 @@ module.exports = {
           },
           defaults: {
             accesstoken: response_token,
-            clienttoken: uid(16),
+            clienttoken: uuidv4(),
             UserId: user[0].id
           },
           include: [models.User]
@@ -70,11 +70,13 @@ module.exports = {
       res.json(req.user);
     }
   },
-  logout: async (req, res, next) => {
+  logout: async (req, res, next) => { 
     try {
+      const header = req.headers.authorization.split(' ');
+      const token = header[1];
       const destroyed = await models.Token.destroy({
         where: {
-          clienttoken: req.headers.token
+          clienttoken: token
         }
       })
       res.send("success");
