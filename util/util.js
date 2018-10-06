@@ -13,7 +13,7 @@ const requireFromEnvironment = (variable) => {
 const setCorsHeaders = (request, response, next) => {
   response.setHeader ('Access-Control-Allow-Origin', '*' );
   response.setHeader ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  response.setHeader ('Access-Control-Allow-Headers', 'X-Requested-With,content-type,api-key,user,user-id,access-token,oauth-id');
+  response.setHeader ('Access-Control-Allow-Headers', 'X-Requested-With,content-type,api-key,user,user-id,access-token,oauth-id,authorization');
   response.setHeader ('Access-Control-Allow-Credentials', true);
   next ()
 }
