@@ -1,24 +1,31 @@
 const express = require ('express'),
-  DB = require ('../util/db'),
+  U = require('../util/util'),
+  DB = require ('../models'),
   router = express.Router ()
 ;
 
 router.get ('/:id', (req, res, next) => {
-  DB.query (
-    'select id, language, code, custom_input as "customInput", file_name as "fileName" from codezzz where id = $1',
-    [req.params.id]
-  )
-  .then (({ rows }) => res.json (rows[0]))
+  DB.code.findById(req.params.id, {
+    attributes: ['language', 'code', ['custom_input', 'customInput'], ['file_name', 'fileName'] ]
+  })
+  .then (code => res.json (code))
   .catch (error => console.error (error))
 })
 
-router.post ('/', (req, res, next) => {
-  DB.query (
-    'insert into codezzz (language, code, custom_input, file_name) values ($1, $2, $3, $4) returning *',
-    [req.body.language, req.body.code, req.body.customInput, req.body.fileName]
-  )
-  .then (({ rows }) => res.json (rows[0]))
-  .catch (error => console.error (error))
+
+router.post('/', U.authenticateOrPass, (req, res, next) => {
+  const {language, code, customInput, filename} = req.body
+  DB.code.create({
+    language,
+    code,
+    custom_input: customInput,
+    file_name: filename,
+    userId: req.user ? req.user.id : null
+  }, {
+    returning: true
+  })
+    .then(code => res.json(code))
+    .catch(error => console.error(error))
 })
 
 module.exports = router;

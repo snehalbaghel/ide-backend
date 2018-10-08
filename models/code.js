@@ -1,14 +1,14 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var Code = sequelize.define('code', {
+  var code = sequelize.define('code', {
     language: DataTypes.TEXT,
     code: DataTypes.TEXT,
     custom_input: DataTypes.TEXT,
     file_name: DataTypes.STRING
   }, {});
-  Code.associate = function(models) {
+  code.associate = function(models) {
     // associations can be defined here
-    Code.belongsTo(models.user);
+    code.belongsTo(models.user);
   };
-  return Code;
+  return code;
 };

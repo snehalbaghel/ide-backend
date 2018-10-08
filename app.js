@@ -5,7 +5,6 @@ const logger = require ('morgan');
 const cookieParser = require ('cookie-parser');
 const bodyParser = require ('body-parser');
 const passport = require ('passport');
-const csurf = require('csurf')
 const passportConf = require ('./passport');
 const index = require ('./routes/index');
 const users = require ('./routes/users');
@@ -27,15 +26,17 @@ app.use (logger ('dev'));
 app.use (bodyParser.json ());
 app.use (bodyParser.urlencoded ({ extended: false }));
 app.use (cookieParser ());
-app.use(csurf({cookie: true}))
-passport.initialize()
-app.use (express.static (path.join (__dirname, 'public')));
-app.use (express.static (path.join (__dirname, '.well-known')));
 
 app.get ('*', U.setCorsHeaders)
 app.post ('*', U.setCorsHeaders)
 app.patch ('*', U.setCorsHeaders)
 app.options ('*', U.setCorsHeaders)
+
+app.use(U.checkRequestOrigin)
+
+passport.initialize()
+app.use (express.static (path.join (__dirname, 'public')));
+app.use (express.static (path.join (__dirname, '.well-known')));
 
 app.use ('/', index);
 app.use ('/users', users);
