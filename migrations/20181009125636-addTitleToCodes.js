@@ -13,19 +13,12 @@ module.exports = {
       const promises = codes.map(code => (code.title = v4().split('-').pop(), code.save()))
       return Promise.all(promises)
     }).then(() => {
-      return queryInterface.addIndex('codes', {
-        fields: ['title'],
-        unique: true,
-        name: 'code_title_unique_index'
-      })
-    }).then(() => {
       return queryInterface.changeColumn("codes", "title", {
         type: Sequelize.STRING,
         allowNull: false
       })
     })
   },
-
   down: (queryInterface, Sequelize) => {
     return queryInterface.removeColumn('codes', 'title')
   }

@@ -35,7 +35,8 @@ router.get ('/:id', (req, res, next) => {
 
 
 router.post('/', U.authenticateOrPass, async (req, res, next) => {
-  const {id, language, code, customInput, filename, title} = req.body
+  const {id, language, code, customInput, filename} = req.body
+  const title = req.body.title || 'Untitled'
 
   if (id && req.user.id) {
     // we have a codeId and user is authenticated -> we can update this code 
