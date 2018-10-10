@@ -35,7 +35,7 @@ router.get ('/:id', (req, res, next) => {
 
 
 router.post('/', U.authenticateOrPass, async (req, res, next) => {
-  const {id, language, code, customInput, filename} = req.body
+  const {id, language, code, customInput, filename, title} = req.body
 
   if (id && req.user.id) {
     // we have a codeId and user is authenticated -> we can update this code 
@@ -48,15 +48,16 @@ router.post('/', U.authenticateOrPass, async (req, res, next) => {
       dbCode.set("code", code)
       dbCode.set("custom_input", customInput)
       dbCode.set("file_name", filename)
+      dbCode.set("title", title)
       await dbCode.save()
       return res.json(dbCode)
     }
   }
-
   // else just create a new one
   DB.code.create({
     language,
     code,
+    title,
     custom_input: customInput,
     file_name: filename,
     userId: req.user ? req.user.id : null
