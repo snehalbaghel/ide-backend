@@ -6,14 +6,14 @@ passport.use(new BearerStrategy((token, done) => {
     if (token === null || token === undefined) {
       return done(null, false, {message: 'Could not authorize'});
     }
-    models.Token.findOne({
+    models.token.findOne({
       where: {
         clienttoken: token
       },
-      include: [models.User]
+      include: [models.user]
     }).then(function (token) {
-      if (token && token.User) {
-        return done(null, token.User);
+      if (token && token.user) {
+        return done(null, token.user);
       }
       else {
         return done(null, false, {message: 'Could not authorize'});

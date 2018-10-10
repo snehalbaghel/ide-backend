@@ -1,12 +1,12 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  var Token = sequelize.define('Token', {
+  var token = sequelize.define('token', {
     accesstoken: DataTypes.STRING,
     clienttoken: DataTypes.STRING
   }, {});
-  Token.associate = function(models) {
+  token.associate = function(models) {
     // associations can be defined here
-    Token.belongsTo(models.User);
+    token.belongsTo(models.user);
   };
-  return Token;
+  return token;
 };

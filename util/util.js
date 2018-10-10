@@ -1,3 +1,5 @@
+const passport = require('passport')
+
 const requireFromEnvironment = (variable) => {
   let value = process.env[variable]
 
@@ -11,12 +13,34 @@ const requireFromEnvironment = (variable) => {
 }
 
 const setCorsHeaders = (request, response, next) => {
-  response.setHeader ('Access-Control-Allow-Origin', '*' );
+  if (['http://localhost:8080', 'https://ide.codingblocks.com'].includes(request.get('origin')))
+    response.setHeader ('Access-Control-Allow-Origin', request.get('origin') );
+
   response.setHeader ('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  response.setHeader ('Access-Control-Allow-Headers', 'X-Requested-With,content-type,api-key,user,user-id,access-token,oauth-id');
+  response.setHeader ('Access-Control-Allow-Headers', 'X-Requested-With,content-type,api-key,user,user-id,access-token,oauth-id,authorization');
   response.setHeader ('Access-Control-Allow-Credentials', true);
   next ()
 }
 
+const checkRequestOrigin = (req, res, next) => {
+  const validOrigin = req.app.get('env') === 'development' ? 'http://localhost:8080': 'https://ide.codingblocks.com'
+  if (req.get('origin') == validOrigin) 
+    next()
+  else
+    res.status(403).send('INVALID: REQUEST ORIGIN')
+}
+
+const authenticateOrPass = (req,res, next) => {
+  passport.authenticate('bearer', { session: false }, (err, user, info) => {
+    if (err) {
+      return next(err)
+    }
+    req.user = user || {}
+    return next()
+  })(req, res, next)
+}
+
 module.exports.requireFromEnvironment = requireFromEnvironment
 module.exports.setCorsHeaders = setCorsHeaders
+module.exports.authenticateOrPass = authenticateOrPass
+module.exports.checkRequestOrigin = checkRequestOrigin

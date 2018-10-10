@@ -20,7 +20,6 @@ module.exports = {
     };
     try {
       const Res = await request(options)
-      console.log(Res);
       response_token = Res.access_token
       const options2 = {
         method: 'GET',
@@ -32,7 +31,7 @@ module.exports = {
       };
       try {
         const data = await request(options2);
-        const user = await models.User.findOrCreate({
+        const user = await models.user.findOrCreate({
           where: {
             oneauthId: data.id
           },
@@ -43,22 +42,25 @@ module.exports = {
             lastname: data.lastname
           }
         })
-        const tokenrow = await models.Token.findOrCreate({
+        debugger;
+        const tokenrow = await models.token.findOrCreate({
           where: {
             accesstoken: response_token
           },
           defaults: {
             accesstoken: response_token,
             clienttoken: uuidv4(),
-            UserId: user[0].id
+            userId: user[0].id
           },
-          include: [models.User]
+          include: [models.user]
         });
         res.json({"token":tokenrow[0].clienttoken});
       } catch (error) {
+        console.error(error)
         res.status(401).send("Unauthorised");
       }
     } catch (error) {
+      console.error(error)
       res.status(401).send("Unauthorised");
     }
   },
@@ -74,7 +76,7 @@ module.exports = {
     try {
       const header = req.headers.authorization.split(' ');
       const token = header[1];
-      const destroyed = await models.Token.destroy({
+      const destroyed = await models.token.destroy({
         where: {
           clienttoken: token
         }
