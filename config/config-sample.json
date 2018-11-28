@@ -9,7 +9,13 @@
     "clientSecret":"",
     "callbackURL":"http://localhost:3000/login",
     "authURL":"https://account.codingblocks.com/oauth/authorize",
-    "tokenURL":"https://account.codingblocks.com/oauth/token"
+    "tokenURL":"https://account.codingblocks.com/oauth/token",
+    "minio": {
+      "bucket": "bucket-name",
+      "endpoint": "minio.xyz.com",
+      "accessKey": "miniokeyhere",
+      "secretKey": "changeme"
+    }
   },
   "test": {
     "username": "root",
@@ -21,7 +27,13 @@
     "clientSecret":"",
     "callbackURL":"",
     "authURL":"https://account.codingblocks.com/oauth/authorize",
-    "tokenURL":"https://account.codingblocks.com/oauth/token"
+    "tokenURL":"https://account.codingblocks.com/oauth/token",
+    "minio": {
+      "bucket": "bucket-name",
+      "endpoint": "minio.xyz.com",
+      "accessKey": "miniokeyhere",
+      "secretKey": "changeme"
+    }
   },
   "production": {
     "username": "root",
@@ -33,6 +45,12 @@
     "clientSecret":"",
     "callbackURL":"",
     "authURL":"https://account.codingblocks.com/oauth/authorize",
-    "tokenURL":"https://account.codingblocks.com/oauth/token"
+    "tokenURL":"https://account.codingblocks.com/oauth/token",
+    "minio": {
+      "bucket": "bucket-name",
+      "endpoint": "minio.xyz.com",
+      "accessKey": "miniokeyhere",
+      "secretKey": "changeme"
+    }
   }
 }
