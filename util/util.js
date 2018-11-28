@@ -40,7 +40,17 @@ const authenticateOrPass = (req,res, next) => {
   })(req, res, next)
 }
 
+const getDataFromStream = function (stream) {
+  return new Promise((resolve, reject) => {
+    let result 
+    stream.on('data', data => result += data)
+    stream.on('end', () => resolve(result))
+    stream.on('error', reject)
+  })
+}
+
 module.exports.requireFromEnvironment = requireFromEnvironment
 module.exports.setCorsHeaders = setCorsHeaders
 module.exports.authenticateOrPass = authenticateOrPass
 module.exports.checkRequestOrigin = checkRequestOrigin
+module.exports.getDataFromStream = getDataFromStream

@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
         return v4().split('-').pop()
       }
     },
-    code: DataTypes.TEXT,
     custom_input: DataTypes.TEXT,
     file_name: DataTypes.STRING
   }, {});

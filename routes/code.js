@@ -2,7 +2,9 @@ const express = require ('express'),
   U = require('../util/util'),
   DB = require ('../models'),
   passport = require('passport'),
-  router = express.Router ()
+  router = express.Router (),
+  minio = require('../services/minio'),
+  config = require('../config/config.json')[process.env.NODE_ENV || 'development']
 ;
 
 router.get('/', passport.authenticate('bearer', {session: false}), (req, res, next) => {
@@ -25,12 +27,18 @@ router.get('/', passport.authenticate('bearer', {session: false}), (req, res, ne
   })
 })
 
-router.get ('/:id', (req, res, next) => {
-  DB.code.findById(req.params.id, {
-    attributes: ['id', 'title', 'language', 'code', ['custom_input', 'customInput'], ['file_name', 'fileName'] ]
+router.get ('/:id', async (req, res, next) => {
+  const dbCode = await DB.code.findById(req.params.id, {
+    attributes: ['id', 'title', 'language', ['custom_input', 'customInput'], ['file_name', 'fileName'] ]
   })
-  .then (code => res.json (code))
-  .catch (error => console.error (error))
+
+  //get code from minio
+  const stream = await minio.getObject(config.minio.bucket, dbCode.id + '/code.txt')
+  
+  // extract complete code from stream
+  dbCode.code = await U.getDataFromStream(stream)
+
+  res.json (dbCode)
 })
 
 
@@ -43,7 +51,7 @@ router.post('/', U.authenticateOrPass, async (req, res, next) => {
     // instead of creating a new one
 
     //check if this code belongs to current user
-    const dbCode = await DB.code.findById(id)
+    let dbCode = await DB.code.findById(id)
     if (dbCode && dbCode.userId === req.user.id) {
       dbCode.set("language", language)
       dbCode.set("code", code)
@@ -51,22 +59,28 @@ router.post('/', U.authenticateOrPass, async (req, res, next) => {
       dbCode.set("file_name", filename)
       dbCode.set("title", title)
       await dbCode.save()
+      // save to minio
+      await minio.putObject(config.minio.bucket, dbCode.id + '/code.txt', code)
       return res.json(dbCode)
     }
   }
+
+
   // else just create a new one
-  DB.code.create({
+  dbCode = await DB.code.create({
     language,
-    code,
     title,
+    code: '',
     custom_input: customInput,
     file_name: filename,
     userId: req.user ? req.user.id : null
   }, {
     returning: true
   })
-    .then(code => res.json(code))
-    .catch(error => console.error(error))
+  
+  await minio.putObject(config.minio.bucket, dbCode.id + '/code.txt' , code)
+
+  res.json(dbCode)
 })
 
 module.exports = router;
