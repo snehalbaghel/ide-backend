@@ -35,7 +35,7 @@ router.get ('/:id', async (req, res, next) => {
   //get code from minio
   const stream = await minio.getObject(config.minio.bucket, dbCode.id + '/code.txt')
   
-  let dbCode = dbCode.get({plain: true})
+  dbCode = dbCode.get({plain: true})
   // extract complete code from stream
   dbCode.code = await U.getDataFromStream(stream)
 
