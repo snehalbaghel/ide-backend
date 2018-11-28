@@ -42,7 +42,7 @@ const authenticateOrPass = (req,res, next) => {
 
 const getDataFromStream = function (stream) {
   return new Promise((resolve, reject) => {
-    let result 
+    let result = ''
     stream.on('data', data => result += data)
     stream.on('end', () => resolve(result))
     stream.on('error', reject)
