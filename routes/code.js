@@ -28,13 +28,14 @@ router.get('/', passport.authenticate('bearer', {session: false}), (req, res, ne
 })
 
 router.get ('/:id', async (req, res, next) => {
-  const dbCode = await DB.code.findById(req.params.id, {
+  let dbCode = await DB.code.findById(req.params.id, {
     attributes: ['id', 'title', 'language', ['custom_input', 'customInput'], ['file_name', 'fileName'] ]
   })
 
   //get code from minio
   const stream = await minio.getObject(config.minio.bucket, dbCode.id + '/code.txt')
   
+  let dbCode = dbCode.get({plain: true})
   // extract complete code from stream
   dbCode.code = await U.getDataFromStream(stream)
 
