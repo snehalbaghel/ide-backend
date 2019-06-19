@@ -17,6 +17,5 @@ const get_auth_token = (nonce, secret) => {
 
 module.exports = {
   get_nonce,
-  get_auth_token,
-  verify_token
+  get_auth_token
 }
