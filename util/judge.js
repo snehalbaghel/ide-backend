@@ -8,7 +8,7 @@ const run = (lang, source, input) => {
   const token = get_auth_token(nonce, config.clientSecrets['judge-backend'])
   const options = {
     method: 'POST',
-    uri: 'https://judge.codingblocks.com/api/submission',
+    uri: 'https://judge-ide.codingblocks.com/api/submission',
     headers: {
       'x-Client-Name': 'ide-backend',
       'x-Auth-Nonce': nonce,
