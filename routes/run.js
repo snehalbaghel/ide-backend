@@ -27,7 +27,7 @@ router.post('/run', U.authenticateOrPass, limiter, async (req, res) => {
       headers: getHeaders(),
       json: true,}
 
-    poller = new Poller(pollOptions)
+    const poller = new Poller(pollOptions)
     const result = await poller.poll()
     res.status(200).json(result)
   } catch (err) {

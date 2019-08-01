@@ -18,8 +18,6 @@ const getHeaders = function() {
 }
 
 const run = (lang, source, input) => {
-  const nonce = get_nonce()
-  const token = get_auth_token(nonce, config.clientSecrets['judge-backend'])
   const options = {
     method: 'POST',
     uri: config.judge2API,
