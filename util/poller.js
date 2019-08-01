@@ -27,9 +27,7 @@ class Poller {
 
   async poll() {
     while(this.maxTries--) {
-      console.log(this.maxTries)
       const response = await this.again()
-      console.log(response)
       if(this.condition(response)) {
         return response
       }
